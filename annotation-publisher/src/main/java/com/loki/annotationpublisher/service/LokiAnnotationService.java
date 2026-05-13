@@ -2,6 +2,8 @@ package com.loki.annotationpublisher.service;
 
 import com.loki.annotationpublisher.config.LokiConfig;
 import com.loki.annotationpublisher.dto.AnnotationRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -13,17 +15,31 @@ import java.util.Map;
 @Service
 public class LokiAnnotationService {
 
+    private static final Logger logger = LogManager.getLogger(LokiAnnotationService.class);
+
     private final RestClient lokiRestClient;
     private final LokiConfig lokiConfig;
 
-    public LokiAnnotationService(final RestClient lokiRestClient,
-                                 final LokiConfig lokiConfig) {
+    public LokiAnnotationService(RestClient lokiRestClient, LokiConfig lokiConfig) {
         this.lokiRestClient = lokiRestClient;
         this.lokiConfig = lokiConfig;
     }
 
-    public void publishAnnotation(final AnnotationRequest request) {
-        final String timestampNanos = String.valueOf(Instant.now().toEpochMilli() * 1_000_000);
+    public void publishAnnotation(AnnotationRequest request) {
+        logger.info("Publishing annotation to Loki. version={}, date={}", request.version(), request.date());
+
+        logger.debug("Raw annotation request={}", request);
+
+        if (request.comment().length() > 500) {
+            logger.warn(
+                    "Annotation comment is unusually long. length={}",
+                    request.comment().length()
+            );
+        }
+
+        final String timestampNanos = String.valueOf(
+                Instant.now().toEpochMilli() * 1_000_000
+        );
 
         final String message = String.format(
                 "Grafana annotation published | date=%s | version=%s | comment=%s",
@@ -48,11 +64,35 @@ public class LokiAnnotationService {
                 )
         );
 
-        lokiRestClient.post()
-                .uri("/loki/api/v1/push")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(payload)
-                .retrieve()
-                .toBodilessEntity();
+        logger.debug("Generated Loki timestampNanos={}", timestampNanos);
+        logger.debug("Generated Loki payload={}", payload);
+
+        try {
+            logger.info("Sending annotation payload to Loki at {}", lokiConfig.url());
+
+            lokiRestClient.post()
+                    .uri("/loki/api/v1/push")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(payload)
+                    .retrieve()
+                    .toBodilessEntity();
+
+            logger.info(
+                    "Successfully published annotation to Loki. version={}, date={}",
+                    request.version(),
+                    request.date()
+            );
+
+        } catch (Exception e) {
+            logger.error(
+                    "Failed to publish annotation to Loki. version={}, date={}, lokiUrl={}",
+                    request.version(),
+                    request.date(),
+                    lokiConfig.url(),
+                    e
+            );
+
+            throw e;
+        }
     }
 }
