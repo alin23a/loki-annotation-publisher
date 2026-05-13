@@ -20,33 +20,24 @@ public class LokiAnnotationService {
     private final RestClient lokiRestClient;
     private final LokiConfig lokiConfig;
 
-    public LokiAnnotationService(RestClient lokiRestClient, LokiConfig lokiConfig) {
+    public LokiAnnotationService(final RestClient lokiRestClient,
+                                 final LokiConfig lokiConfig) {
         this.lokiRestClient = lokiRestClient;
         this.lokiConfig = lokiConfig;
     }
 
-    public void publishAnnotation(AnnotationRequest request) {
+    public void publishAnnotation(final AnnotationRequest request) {
         logger.info("Publishing annotation to Loki. version={}, date={}", request.version(), request.date());
 
         logger.debug("Raw annotation request={}", request);
 
         if (request.comment().length() > 500) {
-            logger.warn(
-                    "Annotation comment is unusually long. length={}",
-                    request.comment().length()
-            );
+            logger.warn("Annotation comment is unusually long. length={}", request.comment().length());
         }
 
-        final String timestampNanos = String.valueOf(
-                Instant.now().toEpochMilli() * 1_000_000
-        );
+        final String timestampNanos = String.valueOf(Instant.now().toEpochMilli() * 1_000_000);
 
-        final String message = String.format(
-                "Grafana annotation published | date=%s | version=%s | comment=%s",
-                request.date(),
-                request.version(),
-                request.comment()
-        );
+        final String message = String.format("Grafana annotation published | date=%s | version=%s | comment=%s", request.date(), request.version(), request.comment());
 
         final Map<String, Object> payload = Map.of(
                 "streams", List.of(
@@ -77,20 +68,10 @@ public class LokiAnnotationService {
                     .retrieve()
                     .toBodilessEntity();
 
-            logger.info(
-                    "Successfully published annotation to Loki. version={}, date={}",
-                    request.version(),
-                    request.date()
-            );
+            logger.info("Successfully published annotation to Loki. version={}, date={}", request.version(), request.date());
 
-        } catch (Exception e) {
-            logger.error(
-                    "Failed to publish annotation to Loki. version={}, date={}, lokiUrl={}",
-                    request.version(),
-                    request.date(),
-                    lokiConfig.url(),
-                    e
-            );
+        } catch (final Exception e) {
+            logger.error("Failed to publish annotation to Loki. version={}, date={}, lokiUrl={}", request.version(), request.date(), lokiConfig.url(), e);
 
             throw e;
         }

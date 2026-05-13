@@ -11,5 +11,4 @@ public record AnnotationRequest(
 
         @NotBlank
         String comment
-) {
-}
+) {}

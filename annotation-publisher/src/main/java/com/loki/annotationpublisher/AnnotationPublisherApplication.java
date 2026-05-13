@@ -8,8 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AnnotationPublisherApplication {
 
-    private static final Logger logger =
-            LogManager.getLogger(AnnotationPublisherApplication.class);
+    private static final Logger logger = LogManager.getLogger(AnnotationPublisherApplication.class);
 
     public static void main(String[] args) {
         logger.info("Starting Grafana Annotation Publisher");

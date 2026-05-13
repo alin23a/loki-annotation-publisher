@@ -18,42 +18,25 @@ public class AnnotationController {
 
     private final LokiAnnotationService lokiAnnotationService;
 
-    public AnnotationController(LokiAnnotationService lokiAnnotationService) {
+    public AnnotationController(final LokiAnnotationService lokiAnnotationService) {
         this.lokiAnnotationService = lokiAnnotationService;
     }
 
     @PostMapping
-    public ResponseEntity<AnnotationResponse> publishAnnotation(
-            @Valid @RequestBody AnnotationRequest request
-    ) {
-        logger.info(
-                "Received annotation publish request. version={}, date={}",
-                request.version(),
-                request.date()
-        );
+    public ResponseEntity<AnnotationResponse> publishAnnotation(final @Valid @RequestBody AnnotationRequest request) {
+        logger.info("Received annotation publish request. version={}, date={}", request.version(), request.date());
 
         logger.debug("Incoming annotation request payload={}", request);
 
         try {
             lokiAnnotationService.publishAnnotation(request);
 
-            logger.info(
-                    "Annotation request completed successfully. version={}, date={}",
-                    request.version(),
-                    request.date()
-            );
+            logger.info("Annotation request completed successfully. version={}, date={}", request.version(), request.date());
 
-            return ResponseEntity.ok(
-                    new AnnotationResponse(true, "Annotation published to Loki")
-            );
+            return ResponseEntity.ok(new AnnotationResponse(true, "Annotation published to Loki"));
 
-        } catch (Exception e) {
-            logger.error(
-                    "Annotation request failed. version={}, date={}",
-                    request.version(),
-                    request.date(),
-                    e
-            );
+        } catch (final Exception e) {
+            logger.error("Annotation request failed. version={}, date={}", request.version(), request.date(), e);
 
             throw e;
         }

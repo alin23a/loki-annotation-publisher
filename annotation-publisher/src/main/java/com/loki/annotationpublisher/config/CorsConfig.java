@@ -13,11 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableConfigurationProperties(LokiConfig.class)
 public class CorsConfig {
 
-    private static final Logger logger =
-            LogManager.getLogger(CorsConfig.class);
+    private static final Logger logger = LogManager.getLogger(CorsConfig.class);
 
     @Bean
-    RestClient lokiRestClient(LokiConfig lokiConfig) {
+    RestClient lokiRestClient(final LokiConfig lokiConfig) {
         logger.info("Creating Loki RestClient with baseUrl={}", lokiConfig.url());
 
         return RestClient.builder()
@@ -31,7 +30,7 @@ public class CorsConfig {
 
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(final CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:5173")
                         .allowedMethods("GET", "POST", "OPTIONS")
