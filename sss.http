@@ -1,5 +1,2 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
-
-###
+### Query Loki annotations
+GET http://localhost:3100/loki/api/v1/query?query={app="grafana-annotation-publisher"}
