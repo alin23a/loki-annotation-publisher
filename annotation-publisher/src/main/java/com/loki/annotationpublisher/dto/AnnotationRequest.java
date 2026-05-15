@@ -1,14 +1,26 @@
 package com.loki.annotationpublisher.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-public record AnnotationRequest(
-        @NotBlank
-        String date,
+import javax.validation.constraints.NotBlank;
 
-        @NotBlank
-        String version,
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class AnnotationRequest {
 
-        @NotBlank
-        String comment
-) {}
+    @NotBlank
+    private String date;
+
+    @NotBlank
+    private String version;
+
+    @NotBlank
+    private String comment;
+}

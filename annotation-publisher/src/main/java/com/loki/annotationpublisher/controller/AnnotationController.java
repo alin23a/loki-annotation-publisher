@@ -3,7 +3,7 @@ package com.loki.annotationpublisher.controller;
 import com.loki.annotationpublisher.dto.AnnotationRequest;
 import com.loki.annotationpublisher.dto.AnnotationResponse;
 import com.loki.annotationpublisher.service.LokiAnnotationService;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -24,19 +24,19 @@ public class AnnotationController {
 
     @PostMapping
     public ResponseEntity<AnnotationResponse> publishAnnotation(final @Valid @RequestBody AnnotationRequest request) {
-        logger.info("Received annotation publish request. version={}, date={}", request.version(), request.date());
+        logger.info("Received annotation publish request. version={}, date={}", request.getVersion(), request.getDate());
 
         logger.debug("Incoming annotation request payload={}", request);
 
         try {
             lokiAnnotationService.publishAnnotation(request);
 
-            logger.info("Annotation request completed successfully. version={}, date={}", request.version(), request.date());
+            logger.info("Annotation request completed successfully. version={}, date={}", request.getVersion(), request.getDate());
 
             return ResponseEntity.ok(new AnnotationResponse(true, "Annotation published to Loki"));
 
         } catch (final Exception e) {
-            logger.error("Annotation request failed. version={}, date={}", request.version(), request.date(), e);
+            logger.error("Annotation request failed. version={}, date={}", request.getVersion(), request.getDate(), e);
 
             throw e;
         }

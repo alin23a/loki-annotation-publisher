@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,12 +16,10 @@ public class CorsConfig {
     private static final Logger logger = LogManager.getLogger(CorsConfig.class);
 
     @Bean
-    RestClient lokiRestClient(final LokiConfig lokiConfig) {
-        logger.info("Creating Loki RestClient with baseUrl={}", lokiConfig.url());
+    RestTemplate lokiRestTemplate(final LokiConfig lokiConfig) {
+        logger.info("Creating Loki RestTemplate with baseUrl={}", lokiConfig.getUrl());
 
-        return RestClient.builder()
-                .baseUrl(lokiConfig.url())
-                .build();
+        return new RestTemplate();
     }
 
     @Bean
